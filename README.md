@@ -3,8 +3,27 @@ This repository contains the Pytorch implementation code for the paper "TFMixer:
 Macroeconomic Data for ELS Knock-In Prediction"
 
 ## Architectures
+Below is a conceptual diagram of how the model processes data in parallel along two axes:
 
 <img src=https://github.com/dxlabskku/TFMixer/blob/main/model.png/>
+
+
+1. Time-Dimension Path
+
+Embeds the sequence of combined features across multiple time steps.
+Uses a TimesBlock to detect different periodicities in the input, performing FFT-based frequency analysis and a set of Inception-like convolution layers.
+Passes the time-embedded representation through multiple layers of multi-head self-attention and feedforward layers.
+
+2. Feature-Dimension Path
+
+Transposes the data to treat each feature as a “token,” applying multi-head self-attention over the feature axis.
+Captures inter-feature relationships at every time step.
+
+3.Final Decision
+
+Concatenates the final states from both paths.
+Produces a single logit (or multiple logits) for classification or regression tasks.
+
 
 $\mathbf{h}^{(l-1)}$ and $\mathbf{x}$ pass through graph convolutional operation to form *global state* and *local state*. *Forget gate* and *update gate* determine the ratio between two states. $\mathbf{h}^{(l)}$ is figured out by two states and graph residual connection from $\mathbf{h}^{(l-1)}$.
 
@@ -17,13 +36,10 @@ $$u^{(l)} = 1 + \alpha \cdot \tanh(\mathbf{W}_u \cdot (\mathbf{s}^{(l)}_g \odot 
 $\mathbf{W}_f$ and $\mathbf{W}_u$ are trainable parameters, and $\odot$ is concatentation of two vectors.
 
 ## Dependencies
-- CUDA 11.0
-- python 3.10.9
-- pytorch 1.13.1
-- torch-geometric 2.2.0
-- torchmetrics 0.11.1
-- numpy 1.24.2
-- hydra-core 1.3.2
+- CUDA 12.2
+- python 3.10.12
+- pytorch 2.5.1
+- numpy 1.26.4
 
 ##  Datasets
 We used four benchmark datasets; Cora, CiteSeer, PubMed, and Flickr. The [data/](https://github.com/dxlabskku/GGCU/tree/main/data) folder contains the Cora benchmark dataset. You can refer to torch-geometric documentation to use other datasets [here](https://pytorch-geometric.readthedocs.io/en/latest/modules/datasets.html).
