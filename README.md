@@ -1,5 +1,6 @@
-# Learning Long-term Dependencies in Non-attributed Graphs with Gate Mechanism
-This repository contains the Pytorch implementation code for the paper "Learning Long-term Dependencies in Non-attributed Graphs with Gate Mechanism"
+# TFMixer for ELS Knock-In Prediction
+This repository contains the Pytorch implementation code for the paper "TFMixer: A Hybrid Attention Model with
+Macroeconomic Data for ELS Knock-In Prediction"
 
 ## Architectures
 
