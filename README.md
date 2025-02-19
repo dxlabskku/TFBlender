@@ -4,7 +4,7 @@ Macroeconomic Data for ELS Knock-In Prediction"
 
 ## Architectures
 
-<img src=https://github.com/dxlabskku/TFMixer/blob/main/model.png width="50%"/>
+<img src=https://github.com/dxlabskku/TFMixer/blob/main/model.png/>
 
 $\mathbf{h}^{(l-1)}$ and $\mathbf{x}$ pass through graph convolutional operation to form *global state* and *local state*. *Forget gate* and *update gate* determine the ratio between two states. $\mathbf{h}^{(l)}$ is figured out by two states and graph residual connection from $\mathbf{h}^{(l-1)}$.
 
