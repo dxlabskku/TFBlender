@@ -32,8 +32,15 @@ Produces a single logit (or multiple logits) for classification or regression ta
 - pytorch 2.5.1
 - numpy 1.26.4
 
-##  Datasets
-We used four benchmark datasets; Cora, CiteSeer, PubMed, and Flickr. The [data/](https://github.com/dxlabskku/GGCU/tree/main/data) folder contains the Cora benchmark dataset. You can refer to torch-geometric documentation to use other datasets [here](https://pytorch-geometric.readthedocs.io/en/latest/modules/datasets.html).
+## Data
+Three core data sources were utilized. First, 61,711 ELS products (issued November 6, 2009–November 6, 2022) were compiled, each mapped to six major underlying indices and labeled for knock-in events. Second, weekly market data for those six indices was collected via yfinance (November 6, 2007–November 6, 2022), ensuring 1–3-year lookback spans. Finally, 275 macroeconomic features from FRED-MD and FRED-QD were merged and deduplicated for the same period. Together, these sources offer a comprehensive view of both ELS contract conditions and broader economic signals.
+
+| Data Collection     | Feature |
+|---------------------|---------|
+| ELS Contract Terms  | 29      |
+| Underlying Assets   | 6       |
+| FRED data           | 275     |
+
 
 ## Results
 Testing accuracy of Node Classification without node features are summarized below.
