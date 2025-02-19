@@ -3,7 +3,7 @@ This repository contains the Pytorch implementation code for the paper "Learning
 
 ## Architectures
 
-<img src=https://github.com/dxlabskku/GGCU/assets/117340491/d6f04ed1-2c04-426d-9a0d-59e0a566126f.jpg width="50%"/>
+<img src=https://github.com/dxlabskku/TFMixer/model.png.jpg width="50%"/>
 
 $\mathbf{h}^{(l-1)}$ and $\mathbf{x}$ pass through graph convolutional operation to form *global state* and *local state*. *Forget gate* and *update gate* determine the ratio between two states. $\mathbf{h}^{(l)}$ is figured out by two states and graph residual connection from $\mathbf{h}^{(l-1)}$.
 
