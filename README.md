@@ -2,6 +2,8 @@
 This repository contains the Pytorch implementation code for the paper "TFMixer: A Hybrid Attention Model with
 Macroeconomic Data for ELS Knock-In Prediction"
 
+Knock-in events can profoundly impact ELS returns, yet contract terms alone often fall short for precise risk estimation. TFMixer addresses this gap by integrating macroeconomic data from FRED-MD and FRED-QD through a time–feature attention mechanism. It demonstrates robust knock-in detection (F1=0.8957, AUROC=0.9076), offering proactive insights for ELS risk management.
+
 ## 1. Architectures
 Below is a conceptual diagram of how the model processes data in parallel along two axes:
 
