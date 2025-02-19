@@ -2,9 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-################################################################################
-# Inception_Block with multi-kernel version
-################################################################################
 class Inception_Block(nn.Module):
     def __init__(self, in_channels, out_channels, num_kernels=6, init_weight=True):
         super(Inception_Block, self).__init__()
@@ -47,9 +44,7 @@ class Inception_Block(nn.Module):
         res = torch.stack(res_list, dim=-1).mean(-1)
         return res
 
-################################################################################
-# FFT_for_Period
-################################################################################
+
 def FFT_for_Period(x, k=2):
     x = x.float()
     xf = torch.fft.rfft(x, dim=1)
@@ -60,9 +55,6 @@ def FFT_for_Period(x, k=2):
     period = x.shape[1] // top_list
     return period, xf.abs().mean(dim=-1)[:, top_list]
 
-################################################################################
-# TimesBlock
-################################################################################
 class TimesBlock(nn.Module):
     """
     Splits input sequence according to multiple periods found by FFT_for_Period,
@@ -100,9 +92,6 @@ class TimesBlock(nn.Module):
         period_weight = F.softmax(period_weight, dim=1).unsqueeze(1).unsqueeze(1).repeat(1, T, D, 1)
         return (res * period_weight).sum(-1) + x
 
-################################################################################
-# Other Transformer Components
-################################################################################
 class FeedForward(nn.Module):
     """Simple 2-layer feedforward network used in Transformers."""
     def __init__(self, embed_dim, hidden_dim, dropout_rate=0.2):
@@ -148,18 +137,8 @@ def make_transformer_layers(embed_dim, num_heads, num_layers, dropout=0.2):
     ])
     return attn_layers, ff_layers, norms1, norms2
 
-################################################################################
-# TFMixer Model
-################################################################################
+
 class TFMixer(nn.Module):
-    """
-    TFMixer Workflow:
-    1) Convert (B,T,features) => TimesBlock to extract multi-period features (time path).
-    2) Pass time-path data through stacked Transformer blocks.
-    3) Transpose original input => (B,features,T) for feature-path Transformer.
-    4) Concat the final time-step (from time path) + final feature (from feature path).
-    5) Output binary logits or regression scores.
-    """
     def __init__(
         self, 
         price_dim, 
