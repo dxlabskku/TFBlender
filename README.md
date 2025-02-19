@@ -2,38 +2,86 @@
 This repository contains the Pytorch implementation code for the paper "TFMixer: A Hybrid Attention Model with
 Macroeconomic Data for ELS Knock-In Prediction"
 
-## Architectures
+## 1. Architectures
 Below is a conceptual diagram of how the model processes data in parallel along two axes:
 
 <img src=https://github.com/dxlabskku/TFMixer/blob/main/model.png/>
 
 
-## 1. Time-Dimension Path
+## 1) Time-Dimension Path
 
 Embeds the sequence of combined features across multiple time steps.
 Uses a TimesBlock to detect different periodicities in the input, performing FFT-based frequency analysis and a set of Inception-like convolution layers.
 Passes the time-embedded representation through multiple layers of multi-head self-attention and feedforward layers.
 
-## 2. Feature-Dimension Path
+## 2) Feature-Dimension Path
 
 Transposes the data to treat each feature as a “token,” applying multi-head self-attention over the feature axis.
 Captures inter-feature relationships at every time step.
 
-## 3.Final Decision
+## 3) Final Decision
 
 Concatenates the final states from both paths.
 Produces a single logit (or multiple logits) for classification or regression tasks.
 
 
-$\mathbf{h}^{(l-1)}$ and $\mathbf{x}$ pass through graph convolutional operation to form *global state* and *local state*. *Forget gate* and *update gate* determine the ratio between two states. $\mathbf{h}^{(l)}$ is figured out by two states and graph residual connection from $\mathbf{h}^{(l-1)}$.
+## 2. Key Files and Modules
 
-*Forget gate* $f^{(l)}$ and *update gate* $u^{(l)}$ of $l$-th unit are formulated as follows:
+## 1) layers/Conv_Blocks.py
+Contains custom convolution modules such as the Inception_Block_V1.
 
-$$f^{(l)} = 1 + \alpha \cdot \tanh(\mathbf{W}_f \cdot (\mathbf{s}^{(l)}_g \odot \mathbf{s}^{(l)}_l)).$$
+## 2) FFT_for_Period
+Performs a real-valued FFT (torch.fft.rfft) on the input sequence.
+Identifies dominant frequencies by computing the mean amplitude across time steps.
+Returns:
+A list of the top-k periods (period_list).
+A set of period-specific weights for the model to perform a weighted sum across the identified frequencies.
 
-$$u^{(l)} = 1 + \alpha \cdot \tanh(\mathbf{W}_u \cdot (\mathbf{s}^{(l)}_g \odot \mathbf{s}^{(l)}_l)).$$
+## 2) TimesBlock
+Main block capturing multi-scale temporal patterns:
+Uses the top-k frequencies from FFT_for_Period to reshape the input sequence into smaller patches.
+Passes each patch through an Inception-based convolution pipeline (self.conv).
+Performs a weighted sum across all k period-based representations, finally adding the original input as a residual connection.
 
-$\mathbf{W}_f$ and $\mathbf{W}_u$ are trainable parameters, and $\odot$ is concatentation of two vectors.
+## 2) FeedForward
+Standard 2-layer perceptron with GELU activation and dropout.
+Used within transformer layers for pointwise transformations.
+
+## 2) MultivariateAttention
+A wrapper around PyTorch’s nn.MultiheadAttention, set to operate with batch_first=True.
+Returns the attention output for queries, keys, and values all set to the same input tensor.
+
+## 2) make_transformer_layers
+Constructs a list of num_layers self-attention blocks and corresponding feedforward and normalization layers.
+Creates layer norms that follow each attention/ff block in typical Transformer style.
+
+## 2) TFMixer (lines 78–146 in the snippet)
+The top-level module integrating both time-based and feature-based paths:
+Initialization
+Defines input dimension sizes (price_dim, group_dim, condition_dim).
+Constructs a TimesBlock for the time-dimension path.
+Builds two sets of transformer layers:
+Time-based (using an embedding dimension of embed_dim).
+Feature-based (using an embedding dimension of seq_len).
+Concludes with a final linear classifier/regressor head (self.final_linear).
+Includes a nn.BCEWithLogitsLoss criterion if you are doing binary classification.
+forward Method
+Concatenates price_data, group_data, and x_condition along the last dimension to form the raw input.
+Time Path:
+Embeds the raw input (pre_linear_time) and then runs it through TimesBlock.
+Feeds the output into a series of multi-head attention and feedforward sub-layers (the time-dimension transformer).
+Produces a final time-path tensor time_x.
+Feature Path:
+Transposes the combined data to shape (batch_size, features, time).
+Applies multi-head attention and feedforward sub-layers across the feature axis.
+Produces a final feature-path tensor var_x.
+Concatenates last_time_x and last_var_x to feed into self.final_linear, which returns the final logits.
+compute_loss Method
+Applies nn.BCEWithLogitsLoss to compute the final loss for binary classification tasks.
+
+
+
+
 
 ## Dependencies
 - CUDA 12.2
