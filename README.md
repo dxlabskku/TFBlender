@@ -9,7 +9,7 @@ Below is a conceptual diagram of how the model processes data in parallel along 
 
 <img src=https://github.com/dxlabskku/TFMixer/blob/main/model.png/>
 
-1) Time-Dimension Path : 
+### 1) Time-Dimension Path : 
 Embeds the sequence of combined features across multiple time steps.
 Uses a TimesBlock to detect different periodicities in the input, performing FFT-based frequency analysis and a set of Inception-like convolution layers.
 Passes the time-embedded representation through multiple layers of multi-head self-attention and feedforward layers.
