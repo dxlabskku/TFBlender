@@ -209,9 +209,9 @@ class TFMixer(nn.Module):
             var_x = n2(var_x + out)
 
         # Final concatenation
-        last_time_x = time_x[:, -1, :]  # (B, embed_dim)
-        last_var_x  = var_x[:, :, -1]   # (B, N_total)
-        logits = self.final_linear(torch.cat([last_time_x, last_var_x], dim=1))  # (B, 1)
+        last_time_x = time_x[:, -1, :]
+        last_var_x  = var_x[:, :, -1]
+        logits = self.final_linear(torch.cat([last_time_x, last_var_x], dim=1))
         return logits
 
     def compute_loss(self, logits, labels):
