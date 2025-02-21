@@ -1,4 +1,4 @@
-# TFMixer for ELS Knock-In Prediction
+# TFMBlender for ELS Knock-In Prediction
 This repository contains the Pytorch implementation code for the paper "TFMixer: A Hybrid Attention Model with
 Macroeconomic Data for ELS Knock-In Prediction"
 
