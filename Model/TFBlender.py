@@ -138,7 +138,7 @@ def make_transformer_layers(embed_dim, num_heads, num_layers, dropout=0.2):
     return attn_layers, ff_layers, norms1, norms2
 
 
-class TFMixer(nn.Module):
+class TFBlender(nn.Module):
     def __init__(
         self, 
         price_dim, 
