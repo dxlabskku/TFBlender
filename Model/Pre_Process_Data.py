@@ -71,7 +71,7 @@ def create_pyramid_data_by_group(
     prev_issue_date = None
     prev_pyramid_data = None
 
-    for issue_date in els_data_scaled['발행일']:
+    for issue_date in els_data_scaled['Issue_Date']:
         if issue_date == prev_issue_date:
             # If the issue date is the same, reuse the previous result
             all_pyramid_data.append(prev_pyramid_data)
@@ -121,10 +121,10 @@ def create_pyramid_data_by_group(
 # 4) Periodic encoding for issue month/date
 ############################
 def encode_time_features(df):
-    df['발행월_sin'] = np.sin(2 * np.pi * df['발행월'] / 12)
-    df['발행월_cos'] = np.cos(2 * np.pi * df['발행월'] / 12)
-    df['발행날짜_sin'] = np.sin(2 * np.pi * df['발행날짜'] / 31)
-    df['발행날짜_cos'] = np.cos(2 * np.pi * df['발행날짜'] / 31)
+    df['Issue_Month_sin'] = np.sin(2 * np.pi * df['Issue_Month'] / 12)
+    df['Issue_Month_cos'] = np.cos(2 * np.pi * df['Issue_Month'] / 12)
+    df['Issue_Day_sin'] = np.sin(2 * np.pi * df['Issue_Day'] / 31)
+    df['Issue_Day_cos'] = np.cos(2 * np.pi * df['Issue_Day'] / 31)
     return df
 
 ############################
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     # (B) Convert date columns
     price_data['sasdate']   = pd.to_datetime(price_data['sasdate'])
-    els_data['발행일']      = pd.to_datetime(els_data['발행일'])
+    els_data['Issue_Date']      = pd.to_datetime(els_data['Issue_Date'])
     month_data['sasdate']   = pd.to_datetime(month_data['sasdate'])
     quarter_data['sasdate'] = pd.to_datetime(quarter_data['sasdate'])
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     quarter_data_scaled = pd.concat([quarter_data_scaled, quarter_data[['sasdate']].reset_index(drop=True)], axis=1)
 
     # (D) Binary label
-    profit_result = els_data['하한베리어'].values
+    profit_result = els_data['Knock_In_Barrior'].values
     binary_labels = [1 if label == 'Yes' else 0 for label in profit_result]
 
     # (E) Time encoding for ELS
@@ -174,10 +174,10 @@ if __name__ == "__main__":
 
     # Drop unused columns
     drop_cols_els = [
-        '낙인자산','낙인일','결정일','발행월_sin','발행월_cos',
-        '발행날짜_sin','발행날짜_cos','발행일','만기일','발행월',
-        '발행날짜','하한베리어','기초자산명1','기초자산명2','기초자산명3',
-        '기준가1','기준가2','기준가3'
+        'Knock_In_Asset','Knock_In_Date','Deter_Date','Issue_Month_sin','Issue_Month_cos',
+        'Issue_Day_sin','Issue_Day_cos','Issue_Date','Expire_Date','Issue_Month',
+        'Issue_Day','Knock_In_Barrior','Underlying_Asset1','Underlying_Asset2','Underlying_Asset3',
+        'Underlying_Asset_Price1','Underlying_Asset_Price2','Underlying_Asset_Price3'
     ]
     els_reduced = els_data.drop(columns=drop_cols_els, errors='ignore')
     els_scaled_vals = scaler.fit_transform(els_reduced)
@@ -185,9 +185,9 @@ if __name__ == "__main__":
 
     # Re-attach columns that were not scaled
     reattach_cols = els_data[[
-        '결정일','발행일','발행월_sin','발행월_cos',
-        '발행날짜_sin','발행날짜_cos','기초자산명1','기초자산명2',
-        '기초자산명3','기준가 대비','기준가1','기준가2','기준가3'
+        'Deter_Date','Issue_Date','Issue_Month_sin','Issue_Month_cos',
+        'Issue_Day_sin','Issue_Day_cos','Underlying_Asset1','Underlying_Asset2',
+        'Underlying_Asset3','Underlying_Asset_Price 대비','Underlying_Asset_Price1','Underlying_Asset_Price2','Underlying_Asset_Price3'
     ]].reset_index(drop=True)
     els_data_scaled = pd.concat([reattach_cols, els_data_scaled.reset_index(drop=True)], axis=1)
 
@@ -202,16 +202,16 @@ if __name__ == "__main__":
     )
 
     # (G) One-hot encode the underlying assets + weighting by reference price
-    asset_cols = ['기초자산명1','기초자산명2','기초자산명3']
-    asset_val_cols = ['기준가1','기준가2','기준가3']
+    asset_cols = ['Underlying_Asset1','Underlying_Asset2','Underlying_Asset3']
+    asset_val_cols = ['Underlying_Asset_Price1','Underlying_Asset_Price2','Underlying_Asset_Price3']
     encoder_assets = OneHotEncoder(sparse_output=False)
     encoded_assets = encoder_assets.fit_transform(els_data_scaled[asset_cols])
     encoded_assets_df = pd.DataFrame(encoded_assets, columns=encoder_assets.get_feature_names_out(asset_cols))
 
     # Multiply one-hot results by each reference price
-    encoded_assets_1 = encoded_assets_df.filter(like='기초자산명1').mul(els_data_scaled['기준가1'], axis=0)
-    encoded_assets_2 = encoded_assets_df.filter(like='기초자산명2').mul(els_data_scaled['기준가2'], axis=0)
-    encoded_assets_3 = encoded_assets_df.filter(like='기초자산명3').mul(els_data_scaled['기준가3'], axis=0)
+    encoded_assets_1 = encoded_assets_df.filter(like='Underlying_Asset1').mul(els_data_scaled['Underlying_Asset_Price1'], axis=0)
+    encoded_assets_2 = encoded_assets_df.filter(like='Underlying_Asset2').mul(els_data_scaled['Underlying_Asset_Price2'], axis=0)
+    encoded_assets_3 = encoded_assets_df.filter(like='Underlying_Asset3').mul(els_data_scaled['Underlying_Asset_Price3'], axis=0)
 
     # Drop these columns from the main DataFrame
     els_data_scaled = els_data_scaled.drop(columns=asset_cols + asset_val_cols, errors='ignore')
@@ -228,10 +228,10 @@ if __name__ == "__main__":
     ], axis=1)
 
     # Convert timestamps to numeric
-    final_df['발행일'] = pd.to_datetime(final_df['발행일'], errors='coerce').apply(
+    final_df['Issue_Date'] = pd.to_datetime(final_df['Issue_Date'], errors='coerce').apply(
         lambda x: x.timestamp() if pd.notnull(x) else 0
     )
-    final_df['결정일'] = pd.to_datetime(final_df['결정일'], errors='coerce').apply(
+    final_df['Deter_Date'] = pd.to_datetime(final_df['Deter_Date'], errors='coerce').apply(
         lambda x: x.timestamp() if pd.notnull(x) else 0
     )
 
