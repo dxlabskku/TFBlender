@@ -167,5 +167,3 @@ if __name__ == "__main__":
 
     binary_labels_tensor = torch.tensor(binary_labels, dtype=torch.float32)
     x_condition_tensor_final = torch.tensor(final_df.values, dtype=torch.float32)
-
-    print("Done.")
