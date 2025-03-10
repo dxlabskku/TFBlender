@@ -82,7 +82,7 @@ def encode_time_features(df):
 
 if __name__ == "__main__":
     price_data = pd.read_csv("stock_from_1998.csv", encoding='cp949')
-    els_data = pd.read_csv("ELS_data.csv", encoding='cp949')
+    els_data = pd.read_csv("ELS_Contract_Terms.csv", encoding='cp949')
     month_data = pd.read_csv("fred_month.csv", encoding='cp949')
     quarter_data = pd.read_csv("fred_quarter.csv", encoding='cp949')
     group_map = load_fred_group("fred_group.csv")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     els_data = encode_time_features(els_data)
     drop_cols_els = [
         'Knock_In_Asset','Knock_In_Date','Deter_Date','Issue_Month_sin','Issue_Month_cos',
-        'Issue_Day_sin','Issue_Day_cos','Issue_Date','만기일','Issue_Month',
+        'Issue_Day_sin','Issue_Day_cos','Issue_Date','Expire_Date','Issue_Month',
         'Issue_Day','Knock_In_Barrior','Underlying_Asset1','Underlying_Asset2','Underlying_Asset3',
         'Underlying_Asset_Price1','Underlying_Asset_Price2','Underlying_Asset_Price3'
     ]
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     reattach_cols = els_data[[
         'Deter_Date','Issue_Date','Issue_Month_sin','Issue_Month_cos',
         'Issue_Day_sin','Issue_Day_cos','Underlying_Asset1','Underlying_Asset2',
-        'Underlying_Asset3','Underlying_Asset_Price 대비','Underlying_Asset_Price1','Underlying_Asset_Price2','Underlying_Asset_Price3'
+        'Underlying_Asset3','Knock_In_Barrior','Underlying_Asset_Price1','Underlying_Asset_Price2','Underlying_Asset_Price3'
     ]].reset_index(drop=True)
     els_data_scaled = pd.concat([reattach_cols, els_data_scaled.reset_index(drop=True)], axis=1)
 
