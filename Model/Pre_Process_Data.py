@@ -81,11 +81,11 @@ def encode_time_features(df):
     return df
 
 if __name__ == "__main__":
-    price_data = pd.read_csv("/home/dxlab/jupyter/kyungjun/1224/stock_from_1998.csv", encoding='cp949')
-    els_data = pd.read_csv("/home/dxlab/jupyter/kyungjun/1224/ELS_data.csv", encoding='cp949')
-    month_data = pd.read_csv("/home/dxlab/jupyter/kyungjun/1224/fred_month.csv", encoding='cp949')
-    quarter_data = pd.read_csv("/home/dxlab/jupyter/kyungjun/1224/fred_quarter.csv", encoding='cp949')
-    group_map = load_fred_group("/home/dxlab/jupyter/kyungjun/1224/fred_group.csv")
+    price_data = pd.read_csv("stock_from_1998.csv", encoding='cp949')
+    els_data = pd.read_csv("ELS_data.csv", encoding='cp949')
+    month_data = pd.read_csv("fred_month.csv", encoding='cp949')
+    quarter_data = pd.read_csv("fred_quarter.csv", encoding='cp949')
+    group_map = load_fred_group("fred_group.csv")
 
     price_data['sasdate'] = pd.to_datetime(price_data['sasdate'])
     els_data['Issue_Date'] = pd.to_datetime(els_data['Issue_Date'])
