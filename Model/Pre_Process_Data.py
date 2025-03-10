@@ -82,7 +82,7 @@ def encode_time_features(df):
 
 if __name__ == "__main__":
     price_data = pd.read_csv("stock_from_1998.csv", encoding='cp949')
-    els_data = pd.read_csv("ELS_Contract_Terms.csv", encoding='cp949')
+    els_data = pd.read_csv("ELS_terms.csv", encoding='cp949')
     month_data = pd.read_csv("fred_month.csv", encoding='cp949')
     quarter_data = pd.read_csv("fred_quarter.csv", encoding='cp949')
     group_map = load_fred_group("fred_group.csv")
