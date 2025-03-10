@@ -14,7 +14,7 @@ def load_fred_group(path):
 ############################
 # 1) Weekly re-sampling (e.g., 128 or 16 weeks)
 ############################
-def resample_to_fixed_weekly(data, issue_date, target_len=128):
+def resample_to_fixed_weekly(data, issue_date, target_len):
     """
     Resamples price data (or similar) into fixed weekly intervals going backward from 'issue_date'.
     """
